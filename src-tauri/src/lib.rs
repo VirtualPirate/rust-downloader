@@ -1,5 +1,6 @@
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-mod binaries;
+pub mod binaries;
+pub mod util;
 
 use std::fs::create_dir_all;
 use std::path::PathBuf;
