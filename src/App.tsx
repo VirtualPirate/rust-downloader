@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import reactLogo from "./assets/react.svg";
+// import reactLogo from "./assets/react.svg";
 import { invoke } from "@tauri-apps/api/core";
 import "./App.css";
-import { Input } from "./components/ui/input";
+// import { Input } from "./components/ui/input";
 import { ThemeProvider } from "./components/ui/theme-provider";
 import YouTubeDownloader from "./components/youtube-downloader";
 
@@ -10,15 +10,31 @@ import { Switch } from "@/components/ui/switch";
 import { Moon, Sun } from "lucide-react";
 import { Label } from "./components/ui/label";
 
-function App() {
-  const [greetMsg, setGreetMsg] = useState("");
-  const [name, setName] = useState("");
-  const [darkMode, setDarkMode] = useState(false);
+import { open } from "@tauri-apps/plugin-dialog";
+import { Button } from "./components/ui/button";
 
-  async function greet() {
-    // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-    setGreetMsg(await invoke("greet", { name }));
-  }
+// import { appDataDir } from "@tauri-apps/api/path";
+
+// when using `"withGlobalTauri": true`, you may use
+// const { open } = window.__TAURI__.dialog;
+
+// Open a dialog
+// const file = await open({
+//   multiple: false,
+//   directory: false,
+// });
+// console.log(file);
+
+function App() {
+  // const [greetMsg, setGreetMsg] = useState("");
+  // const [name, setName] = useState("");
+  const [darkMode, setDarkMode] = useState(false);
+  const [file, setFile] = useState("");
+
+  // async function greet() {
+  //   // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
+  //   setGreetMsg(await invoke("greet", { name }));
+  // }
 
   useEffect(() => {
     if (darkMode) {
@@ -48,6 +64,23 @@ function App() {
         </div>
         {/* <Input type="email" placeholder="Email" /> */}
         <YouTubeDownloader />
+
+        <Button
+          onClick={async () => {
+            const file = await open({
+              multiple: false,
+              directory: false,
+            });
+
+            setFile(await invoke("cmd_convert_mp4_to_mp3", { filename: file }));
+            // setFile(await appDataDir());
+          }}
+        >
+          Open Dialogg
+        </Button>
+
+        {/* <div>{appDataDirPath}</div> */}
+        <div>{file}</div>
       </div>
     </ThemeProvider>
   );
