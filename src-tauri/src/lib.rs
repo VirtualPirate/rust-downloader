@@ -1,10 +1,10 @@
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 mod binaries;
+
 use std::fs::create_dir_all;
 use std::path::PathBuf;
 
 use binaries::{convert_mp4_to_mp3, download_ffmpeg_if_not_exists};
-use tauri::AppHandle;
 use tauri::Manager;
 
 #[tauri::command]

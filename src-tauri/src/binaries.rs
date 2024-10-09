@@ -1,10 +1,8 @@
 use ffmpeg_sidecar::{
     download::{check_latest_version, download_ffmpeg_package, ffmpeg_download_url, unpack_ffmpeg},
-    paths::sidecar_dir,
-    version::{ffmpeg_version, ffmpeg_version_with_path},
+    version::ffmpeg_version_with_path,
 };
 use std::{
-    env::current_exe,
     path::{Component, PathBuf},
     process::Command,
 };
