@@ -6,6 +6,7 @@ use std::{
     path::{Component, PathBuf},
     process::Command,
 };
+use youtube_dl::download_yt_dlp;
 
 pub fn download_ffmpeg(path: PathBuf) -> Result<(), Box<dyn std::error::Error>> {
     // These defaults will automatically select the correct download URL for your
@@ -50,6 +51,12 @@ pub fn download_ffmpeg_if_not_exists(path_buf: PathBuf) -> Result<(), Box<dyn st
     }
 
     Ok(())
+}
+
+pub async fn download_ytdlp_if_not_exists(
+    path: PathBuf,
+) -> Result<PathBuf, Box<dyn std::error::Error>> {
+    download_yt_dlp(path, false).await.map_err(|e| e.into())
 }
 
 fn resolve_relative_path(path_buf: PathBuf) -> PathBuf {

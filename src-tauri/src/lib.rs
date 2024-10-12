@@ -5,7 +5,7 @@ pub mod util;
 use std::fs::create_dir_all;
 use std::path::PathBuf;
 
-use binaries::{convert_mp4_to_mp3, download_ffmpeg_if_not_exists};
+use binaries::{convert_mp4_to_mp3, download_ffmpeg_if_not_exists, download_ytdlp_if_not_exists};
 use tauri::Manager;
 
 #[tauri::command]
@@ -40,13 +40,22 @@ pub fn run() {
                     create_dir_all(path_buf.clone())
                         .expect("Error occured in create_dir_all() method");
 
-                    download_ffmpeg_if_not_exists(path_buf)
+                    download_ffmpeg_if_not_exists(path_buf.clone())
                         .expect("Error occured while downloeding binary");
+
+                    tauri::async_runtime::spawn(async move {
+                        // also added move here
+                        match download_ytdlp_if_not_exists(path_buf.clone()).await {
+                            Ok(_) => (),
+                            Err(e) => eprintln!("Error downloading yt-dlp: {:?}", e),
+                        };
+                    });
                 }
                 Err(_) => {
                     println!("Error occured");
                 }
             }
+
             Ok(())
         })
         .plugin(tauri_plugin_fs::init())
