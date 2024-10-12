@@ -1,13 +1,11 @@
 use ffmpeg_sidecar::{
-    download::{check_latest_version, ffmpeg_download_url, unpack_ffmpeg},
+    download::{check_latest_version, download_ffmpeg_package, ffmpeg_download_url, unpack_ffmpeg},
     version::ffmpeg_version_with_path,
 };
 use std::{
     path::{Component, PathBuf},
     process::Command,
 };
-
-use crate::util::download_file;
 
 pub fn download_ffmpeg(path: PathBuf) -> Result<(), Box<dyn std::error::Error>> {
     // These defaults will automatically select the correct download URL for your
@@ -18,7 +16,7 @@ pub fn download_ffmpeg(path: PathBuf) -> Result<(), Box<dyn std::error::Error>> 
     // By default the download will use a `curl` command. You could also write
     // your own download function and use another package like `reqwest` instead.
     println!("Downloading from: {:?}", download_url);
-    let archive_path = download_file(download_url, &destination)?;
+    let archive_path = download_ffmpeg_package(download_url, &destination)?;
     println!("Downloaded package: {:?}", archive_path);
 
     // Extraction uses `tar` on all platforms (available in Windows since version 1803)
