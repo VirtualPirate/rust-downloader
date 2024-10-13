@@ -1,12 +1,15 @@
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 pub mod binaries;
+pub mod commands;
 pub mod util;
 
 use std::fs::create_dir_all;
 use std::path::PathBuf;
 
-use binaries::{convert_mp4_to_mp3, download_ffmpeg_if_not_exists, download_ytdlp_if_not_exists};
+use binaries::convert_mp4_to_mp3;
 use tauri::Manager;
+
+use commands::{download_ffmpeg, download_ytdlp, ffmpeg_exists, ytdlp_exists};
 
 #[tauri::command]
 fn greet(name: &str) -> String {
@@ -39,17 +42,6 @@ pub fn run() {
                     println!("{:?} directory", path_buf);
                     create_dir_all(path_buf.clone())
                         .expect("Error occured in create_dir_all() method");
-
-                    download_ffmpeg_if_not_exists(path_buf.clone())
-                        .expect("Error occured while downloeding binary");
-
-                    tauri::async_runtime::spawn(async move {
-                        // also added move here
-                        match download_ytdlp_if_not_exists(path_buf.clone()).await {
-                            Ok(_) => (),
-                            Err(e) => eprintln!("Error downloading yt-dlp: {:?}", e),
-                        };
-                    });
                 }
                 Err(_) => {
                     println!("Error occured");
@@ -61,7 +53,14 @@ pub fn run() {
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_shell::init())
-        .invoke_handler(tauri::generate_handler![greet, cmd_convert_mp4_to_mp3])
+        .invoke_handler(tauri::generate_handler![
+            greet,
+            cmd_convert_mp4_to_mp3,
+            ffmpeg_exists,
+            ytdlp_exists,
+            download_ffmpeg,
+            download_ytdlp
+        ])
         .run(context)
         .expect("error while running tauri application");
 }

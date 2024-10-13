@@ -6,9 +6,48 @@ use std::{
     path::{Component, PathBuf},
     process::Command,
 };
-use youtube_dl::download_yt_dlp;
+use youtube_dl::{download_yt_dlp, downloader::YoutubeDlFetcher};
 
-pub fn download_ffmpeg(path: PathBuf) -> Result<(), Box<dyn std::error::Error>> {
+pub fn ffmpeg_exists(path: &PathBuf) -> bool {
+    match check_latest_version() {
+        Ok(version) => {
+            let ffmpeg_executable = if cfg!(target_os = "windows") {
+                "ffmpeg.exe"
+            } else {
+                "ffmpeg"
+            };
+            match ffmpeg_version_with_path(path.join(ffmpeg_executable)) {
+                Ok(current_version) => current_version == version,
+                Err(_) => false,
+            }
+        }
+        Err(_) => false,
+    }
+}
+
+pub async fn ytdlp_exists(path: &PathBuf) -> bool {
+    let ytdl_fetcher = YoutubeDlFetcher::default();
+
+    let latest_release = match ytdl_fetcher.find_newest_release().await {
+        Ok(release) => release,
+        Err(_) => return false,
+    };
+    let path = if cfg!(target_os = "windows") {
+        path.join("yt-dlp.exe")
+    } else {
+        path.join("yt-dlp")
+    };
+    match std::process::Command::new(&path).arg("--version").output() {
+        Ok(output) => {
+            let version = String::from_utf8_lossy(&output.stdout).trim().to_string();
+
+            version == latest_release.tag
+        }
+        Err(_) => false,
+    }
+}
+
+pub fn download_ffmpeg(path: &PathBuf) -> Result<(), Box<dyn std::error::Error>> {
     // These defaults will automatically select the correct download URL for your
     // platform.
     let download_url = ffmpeg_download_url()?;
@@ -33,33 +72,25 @@ pub fn download_ffmpeg(path: PathBuf) -> Result<(), Box<dyn std::error::Error>> 
     Ok(())
 }
 
-pub fn download_ffmpeg_if_not_exists(path_buf: PathBuf) -> Result<(), Box<dyn std::error::Error>> {
-    match check_latest_version() {
-        Ok(version) => {
-            match ffmpeg_version_with_path(path_buf.clone().join("./ffmpeg")) {
-                Ok(current_version) => {
-                    if current_version != version {
-                        download_ffmpeg(path_buf).expect("Download failed");
-                    }
-                }
-                Err(_) => {
-                    download_ffmpeg(path_buf).expect("Download Failed");
-                }
-            };
-        }
-        Err(_) => println!("Skipping version check on this platform."),
+pub fn download_ffmpeg_if_not_exists(path: &PathBuf) -> Result<(), Box<dyn std::error::Error>> {
+    if !ffmpeg_exists(path) {
+        download_ffmpeg(path)
+    } else {
+        Err("ffmpeg does not exist and could not be downloaded".into())
     }
-
-    Ok(())
 }
 
 pub async fn download_ytdlp_if_not_exists(
-    path: PathBuf,
+    path: &PathBuf,
 ) -> Result<PathBuf, Box<dyn std::error::Error>> {
-    download_yt_dlp(path, false).await.map_err(|e| e.into())
+    if !ytdlp_exists(path).await {
+        download_yt_dlp(path).await.map_err(|e| e.into())
+    } else {
+        Err("ytdlp does not exist and could not be downloaded".into())
+    }
 }
 
-fn resolve_relative_path(path_buf: PathBuf) -> PathBuf {
+fn resolve_relative_path(path_buf: &PathBuf) -> PathBuf {
     let mut components: Vec<PathBuf> = vec![];
     for component in path_buf.as_path().components() {
         match component {

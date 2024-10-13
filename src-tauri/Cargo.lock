@@ -5109,7 +5109,7 @@ dependencies = [
 [[package]]
 name = "youtube_dl"
 version = "0.10.0"
-source = "git+https://github.com/VirtualPirate/youtube-dl-rs?branch=main#4f6f01bb804cf93b670b520c28a89cd1755f4c26"
+source = "git+https://github.com/VirtualPirate/youtube-dl-rs?rev=78a8c30b#78a8c30bf0ad5f723c520efb2d4a96161863fa17"
 dependencies = [
  "log",
  "reqwest",
