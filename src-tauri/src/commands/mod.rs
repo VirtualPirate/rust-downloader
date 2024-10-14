@@ -22,10 +22,12 @@ pub async fn ytdlp_exists(path: String) -> bool {
 }
 
 #[tauri::command]
-pub fn download_ffmpeg(path: String) -> bool {
+pub async fn download_ffmpeg(path: String) -> bool {
     println!("[invoke] download_ffmpeg");
     let path = PathBuf::from(path);
-    let success = binaries::download_ffmpeg(&path).is_ok();
+    let success = tokio::task::spawn_blocking(move || binaries::download_ffmpeg(&path).is_ok())
+        .await
+        .unwrap_or(false);
     println!("[success] download_ffmpeg");
     success
 }

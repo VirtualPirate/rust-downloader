@@ -4,41 +4,52 @@ import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import { invoke } from "@tauri-apps/api/core";
 import { appDataDir } from "@tauri-apps/api/path";
+import { BinaryState, useExternalBinaryStore } from "@/store";
+
+const appDataDirectory = await appDataDir();
+
+const ffmpegExists: boolean = await invoke("ffmpeg_exists", {
+  path: appDataDirectory,
+});
+const ytdlpExists: boolean = await invoke("ytdlp_exists", {
+  path: appDataDirectory,
+});
+
+useExternalBinaryStore.setState({
+  ffmpeg: ffmpegExists ? BinaryState.Available : BinaryState.Absent,
+  ytdlp: ytdlpExists ? BinaryState.Available : BinaryState.Absent,
+});
 
 export const Route = createRootRoute({
-  beforeLoad: async () => {
+  loader: async () => {
     const appDataDirectory = await appDataDir();
+    const { ffmpeg, ytdlp } = useExternalBinaryStore.getState();
 
-    const ffmpegExists = await invoke("ffmpeg_exists", {
-      path: appDataDirectory,
-    });
-    const ytdlpExists = await invoke("ytdlp_exists", {
-      path: appDataDirectory,
-    });
-
-    return { ffmpegExists, ytdlpExists };
-  },
-  loader: async (data) => {
-    const appDataDirectory = await appDataDir();
-
-    const { ffmpegExists, ytdlpExists } = data.context;
-
-    if (!ffmpegExists) {
+    if (ffmpeg === BinaryState.Absent) {
+      useExternalBinaryStore.setState({ ffmpeg: BinaryState.InProgress });
       await invoke("download_ffmpeg", {
         path: appDataDirectory,
       });
+      useExternalBinaryStore.setState({ ffmpeg: BinaryState.Available });
     }
 
-    if (!ytdlpExists) {
+    if (ytdlp === BinaryState.Absent) {
+      useExternalBinaryStore.setState({ ytdlp: BinaryState.InProgress });
       await invoke("download_ytdlp", {
         path: appDataDirectory,
       });
+      useExternalBinaryStore.setState({ ytdlp: BinaryState.Available });
     }
   },
   wrapInSuspense: true,
   pendingComponent: () => {
-    return <DependencyLoader />;
-  }, // Show Loader component while loading
+    console.log("loader componenet");
+    const { ffmpeg, ytdlp } = useExternalBinaryStore();
+    if (ffmpeg === BinaryState.InProgress || ytdlp === BinaryState.InProgress) {
+      return <DependencyLoader />;
+    }
+    return null;
+  }, // Show Loader component while loading if ytdlp or ffmpeg is in progress
   component: () => {
     return (
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">

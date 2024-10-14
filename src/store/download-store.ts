@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-interface DownloadItem {
+export interface DownloadItem {
   id: string;
   title: string;
   thumbnail: string;
