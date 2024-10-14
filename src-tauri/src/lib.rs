@@ -34,6 +34,7 @@ pub fn run() {
     let context = tauri::generate_context!();
 
     tauri::Builder::default()
+        .plugin(tauri_plugin_store::Builder::new().build())
         .setup(|app| {
             let app_data_dir = app.handle().path().app_data_dir();
 

@@ -5,24 +5,36 @@ use std::path::PathBuf;
 
 #[tauri::command]
 pub fn ffmpeg_exists(path: String) -> bool {
+    println!("[invoke] ffmpeg_exists");
     let path = PathBuf::from(path);
-    binaries::ffmpeg_exists(&path)
+    let exists = binaries::ffmpeg_exists(&path);
+    println!("[success] ffmpeg_exists");
+    exists
 }
 
 #[tauri::command]
 pub async fn ytdlp_exists(path: String) -> bool {
+    println!("[invoke] ytdlp_exists");
     let path: PathBuf = PathBuf::from(path);
-    binaries::ytdlp_exists(&path).await
+    let exists = binaries::ytdlp_exists(&path).await;
+    println!("[success] ytdlp_exists");
+    exists
 }
 
 #[tauri::command]
 pub fn download_ffmpeg(path: String) -> bool {
+    println!("[invoke] download_ffmpeg");
     let path = PathBuf::from(path);
-    binaries::download_ffmpeg(&path).is_ok()
+    let success = binaries::download_ffmpeg(&path).is_ok();
+    println!("[success] download_ffmpeg");
+    success
 }
 
 #[tauri::command]
 pub async fn download_ytdlp(path: String) -> bool {
+    println!("[invoke] download_ytdlp");
     let path = PathBuf::from(path);
-    download_yt_dlp(&path).await.is_ok()
+    let success = download_yt_dlp(&path).await.is_ok();
+    println!("[success] download_ytdlp");
+    success
 }

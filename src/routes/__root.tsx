@@ -5,10 +5,10 @@ import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import { invoke } from "@tauri-apps/api/core";
 import { appDataDir } from "@tauri-apps/api/path";
 
-const appDataDirectory = await appDataDir();
-
 export const Route = createRootRoute({
   beforeLoad: async () => {
+    const appDataDirectory = await appDataDir();
+
     const ffmpegExists = await invoke("ffmpeg_exists", {
       path: appDataDirectory,
     });
@@ -19,6 +19,8 @@ export const Route = createRootRoute({
     return { ffmpegExists, ytdlpExists };
   },
   loader: async (data) => {
+    const appDataDirectory = await appDataDir();
+
     const { ffmpegExists, ytdlpExists } = data.context;
 
     if (!ffmpegExists) {

@@ -11,6 +11,7 @@
     "dialog:default",
     "shell:allow-spawn",
     "shell:allow-execute",
-    "fs:default"
+    "fs:default",
+    "store:default"
   ]
 }
