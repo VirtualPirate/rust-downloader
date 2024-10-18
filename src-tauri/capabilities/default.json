@@ -12,6 +12,7 @@
     "shell:allow-spawn",
     "shell:allow-execute",
     "fs:default",
-    "store:default"
+    "store:default",
+    "upload:default"
   ]
 }

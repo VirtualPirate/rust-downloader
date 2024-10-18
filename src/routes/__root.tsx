@@ -1,6 +1,6 @@
 import DependencyLoader from "@/components/dependency-loader";
 import { ThemeProvider } from "@/components/ui/theme-provider";
-import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
+import { createRootRoute, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import { invoke } from "@tauri-apps/api/core";
 import { appDataDir } from "@tauri-apps/api/path";
@@ -53,7 +53,7 @@ export const Route = createRootRoute({
   component: () => {
     return (
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-        <div className="p-2 flex gap-2">
+        {/* <div className="p-2 flex gap-2">
           <Link to="/" className="[&.active]:font-bold">
             Home
           </Link>{" "}
@@ -61,7 +61,7 @@ export const Route = createRootRoute({
             About
           </Link>
         </div>
-        <hr />
+        <hr /> */}
         <Outlet />
         <TanStackRouterDevtools />
       </ThemeProvider>

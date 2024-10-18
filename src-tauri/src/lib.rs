@@ -1,6 +1,7 @@
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 pub mod binaries;
 pub mod commands;
+pub mod parsers;
 pub mod util;
 
 use std::fs::create_dir_all;
@@ -10,6 +11,7 @@ use binaries::convert_mp4_to_mp3;
 use tauri::Manager;
 
 use commands::{download_ffmpeg, download_ytdlp, ffmpeg_exists, ytdlp_exists};
+use parsers::fetch_youtube_video;
 
 #[tauri::command]
 fn greet(name: &str) -> String {
@@ -34,6 +36,7 @@ pub fn run() {
     let context = tauri::generate_context!();
 
     tauri::Builder::default()
+        .plugin(tauri_plugin_upload::init())
         .plugin(tauri_plugin_store::Builder::new().build())
         .setup(|app| {
             let app_data_dir = app.handle().path().app_data_dir();
@@ -60,7 +63,8 @@ pub fn run() {
             ffmpeg_exists,
             ytdlp_exists,
             download_ffmpeg,
-            download_ytdlp
+            download_ytdlp,
+            fetch_youtube_video,
         ])
         .run(context)
         .expect("error while running tauri application");

@@ -12,6 +12,9 @@ import { Label } from "../components/ui/label";
 
 import { open } from "@tauri-apps/plugin-dialog";
 import { Button } from "../components/ui/button";
+import DownloadList from "@/components/youtube-downloader-v2";
+import DownloadForm from "@/components/download-form";
+import { DownloadStatus } from "@/lib/downloader";
 
 // import { appDataDir } from "@tauri-apps/api/path";
 
@@ -24,6 +27,27 @@ import { Button } from "../components/ui/button";
 //   directory: false,
 // });
 // console.log(file);
+
+// filedownloader.addDownloadTask(
+//   {
+//     id: "1",
+//     url: "https://link.testfile.org/ihDc9s",
+//     dirFilename: "./_data/test.mp4",
+//     status: DownloadStatus.PENDING,
+//   },
+//   {
+//     id: "2",
+//     url: "https://link.testfile.org/ihDc9s",
+//     dirFilename: "./_data/test2.mp4",
+//     status: DownloadStatus.PENDING,
+//   },
+//   {
+//     id: "3",
+//     url: "https://link.testfile.org/ihDc9s",
+//     dirFilename: "./_data/test3.mp4",
+//     status: DownloadStatus.PENDING,
+//   }
+// );
 
 function App() {
   // const [greetMsg, setGreetMsg] = useState("");
@@ -47,7 +71,7 @@ function App() {
   return (
     <>
       <div className="m-4">
-        <div className="flex items-center space-x-2">
+        {/* <div className="flex items-center space-x-2">
           <Switch
             id="dark-mode"
             checked={darkMode}
@@ -61,11 +85,12 @@ function App() {
           ) : (
             <Sun className="h-4 w-4" />
           )}
-        </div>
+        </div> */}
         {/* <Input type="email" placeholder="Email" /> */}
-        <YouTubeDownloader />
+        <DownloadForm />
+        <DownloadList />
 
-        <Button
+        {/* <Button
           onClick={async () => {
             const file = await open({
               multiple: false,
@@ -77,10 +102,10 @@ function App() {
           }}
         >
           Open Dialogg
-        </Button>
+        </Button> */}
 
         {/* <div>{appDataDirPath}</div> */}
-        <div>{file}</div>
+        {/* <div>{file}</div> */}
       </div>
     </>
   );
