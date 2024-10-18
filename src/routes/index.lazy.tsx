@@ -15,6 +15,7 @@ import { Button } from "../components/ui/button";
 import DownloadList from "@/components/youtube-downloader-v2";
 import DownloadForm from "@/components/download-form";
 import { DownloadStatus } from "@/lib/downloader";
+import { DownloadPopup } from "@/components/download-popup";
 
 // import { appDataDir } from "@tauri-apps/api/path";
 
@@ -54,6 +55,8 @@ function App() {
   // const [name, setName] = useState("");
   const [darkMode, setDarkMode] = useState(false);
   const [file, setFile] = useState("");
+
+  const [downloadPopupIsOpen, setDownloadPopupIsOpen] = useState(false);
 
   // async function greet() {
   //   // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
@@ -103,6 +106,26 @@ function App() {
         >
           Open Dialogg
         </Button> */}
+
+        <Button
+          onClick={() => {
+            setDownloadPopupIsOpen(true);
+          }}
+        >
+          Open Download Popup
+        </Button>
+
+        <DownloadPopup
+          isOpen={downloadPopupIsOpen}
+          onClose={() => {
+            setDownloadPopupIsOpen(false);
+          }}
+          videoInfo={{
+            title: "Hello",
+            thumbnail: "",
+            description: "Description",
+          }}
+        />
 
         {/* <div>{appDataDirPath}</div> */}
         {/* <div>{file}</div> */}
