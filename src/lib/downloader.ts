@@ -1,9 +1,5 @@
+import { DownloadStatus } from "@/store";
 import { download } from "@tauri-apps/plugin-upload";
-
-export enum DownloadStatus {
-  PENDING = "pending",
-  DOWNLOADING = "downloading",
-}
 
 interface DownloadItem {
   id: string;

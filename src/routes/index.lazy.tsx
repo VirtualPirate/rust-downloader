@@ -14,7 +14,6 @@ import { open } from "@tauri-apps/plugin-dialog";
 import { Button } from "../components/ui/button";
 import DownloadList from "@/components/youtube-downloader-v2";
 import DownloadForm from "@/components/download-form";
-import { DownloadStatus } from "@/lib/downloader";
 import { DownloadPopup } from "@/components/download-popup";
 
 // import { appDataDir } from "@tauri-apps/api/path";
@@ -58,11 +57,6 @@ function App() {
 
   const [downloadPopupIsOpen, setDownloadPopupIsOpen] = useState(false);
 
-  // async function greet() {
-  //   // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-  //   setGreetMsg(await invoke("greet", { name }));
-  // }
-
   useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add("dark");
@@ -92,7 +86,6 @@ function App() {
         {/* <Input type="email" placeholder="Email" /> */}
         <DownloadForm />
         <DownloadList />
-
         {/* <Button
           onClick={async () => {
             const file = await open({
