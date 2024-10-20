@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { OrderedMap, Seq } from "immutable";
 
 import { download } from "@tauri-apps/plugin-upload";
+import { TransferStats } from "@/lib/transfer-stat";
 
 export enum DownloadStatus {
   PENDING = "pending",
@@ -175,6 +176,7 @@ export const useDownloadStore = create<DownloadStore & DownloadStoreActions>(
               ) as DownloadItem;
 
               let accumulatedProgress = 0;
+              const transferStat = TransferStats.default();
 
               console.log(`File downloading ${downloadingItem.id}`);
               download(
@@ -194,10 +196,12 @@ export const useDownloadStore = create<DownloadStore & DownloadStoreActions>(
                   }
 
                   accumulatedProgress += progress;
+                  transferStat.recordChunkTransfer(progress);
                   get().updateItem({
                     id: downloadingItem.id,
                     values: {
                       progress: accumulatedProgress,
+                      speed: transferStat.transferSpeed,
                     },
                     from: [DownloadStatus.DOWNLOADING],
                   });
