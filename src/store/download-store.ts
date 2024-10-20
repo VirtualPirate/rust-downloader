@@ -19,6 +19,7 @@ export interface DownloadItem {
   dirFilename: string;
   status: DownloadStatus;
   quality: string;
+  description: string;
 }
 
 type DownloadStore = {

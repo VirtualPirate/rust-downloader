@@ -18,15 +18,18 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { DownloadItem, useDownloadStore } from "@/store";
+import {
+  AudioResolutions,
+  MultimediaType,
+  VideoResolutions,
+  YoutubeParser,
+} from "@/lib/youtube-parser";
 
 interface YouTubeDownloadPopupProps {
   isOpen: boolean;
   onClose: () => void;
-  videoInfo: {
-    title: string;
-    thumbnail: string;
-    description: string;
-  };
+  videoInfo: any;
 }
 
 export function DownloadPopup({
@@ -35,12 +38,29 @@ export function DownloadPopup({
   videoInfo,
 }: YouTubeDownloadPopupProps) {
   const [format, setFormat] = useState<"mp3" | "mp4">("mp4");
-  const [quality, setQuality] = useState("720p");
-  const [fileLocation, setFileLocation] = useState("");
+  const [quality, setQuality] = useState<VideoResolutions>("720p");
+  const [fileLocation, setFileLocation] = useState<string>("");
+  const [downloadItem, setDownloadItem] = useState<DownloadItem | undefined>(
+    undefined
+  );
+
+  const downloadStore = useDownloadStore();
 
   const handleDownload = () => {
     // Implement the actual download logic here
-    console.log("Downloading:", { format, quality, fileLocation });
+    console.log("rawInfo: ", videoInfo.SingleVideo);
+
+    const downloadItem = YoutubeParser.formatToDownloadItem(
+      videoInfo,
+      MultimediaType.Video,
+      quality as VideoResolutions & AudioResolutions
+    );
+
+    console.log("convertedInfo ", downloadItem);
+
+    downloadStore.addItem(downloadItem);
+    downloadStore.startDownloadingIfNotDownloading();
+
     onClose();
   };
 
@@ -54,11 +74,12 @@ export function DownloadPopup({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
+        <DialogTitle>Are you absolutely sure?</DialogTitle>
         <ScrollArea className="max-h-[80vh] pr-4">
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
               <img
-                src={videoInfo.thumbnail}
+                src={videoInfo?.thumbnail}
                 alt="Video thumbnail"
                 width="100%"
                 height={180}
@@ -66,7 +87,7 @@ export function DownloadPopup({
               />
             </div>
             <p id="title" className="text-sm">
-              {videoInfo.title}
+              {videoInfo?.title}
             </p>
 
             <div className="grid gap-2">
@@ -77,7 +98,7 @@ export function DownloadPopup({
                 id="description"
                 className="text-sm text-gray-500 max-h-24 overflow-y-auto"
               >
-                {videoInfo.description}
+                {videoInfo?.description}
               </p>
             </div>
             <div className="grid gap-2">
@@ -101,11 +122,18 @@ export function DownloadPopup({
                   </div>
                 </RadioGroup>
                 {format === "mp4" && (
-                  <Select value={quality} onValueChange={setQuality}>
+                  <Select
+                    value={quality}
+                    onValueChange={(value: string) => {
+                      setQuality(value as VideoResolutions);
+                    }}
+                  >
                     <SelectTrigger id="quality" className="w-[100px]">
                       <SelectValue placeholder="Quality" />
                     </SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="144p">144p</SelectItem>
+                      <SelectItem value="240p">240p</SelectItem>
                       <SelectItem value="360p">360p</SelectItem>
                       <SelectItem value="480p">480p</SelectItem>
                       <SelectItem value="720p">720p</SelectItem>

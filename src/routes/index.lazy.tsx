@@ -100,15 +100,15 @@ function App() {
           Open Dialogg
         </Button> */}
 
-        <Button
+        {/* <Button
           onClick={() => {
             setDownloadPopupIsOpen(true);
           }}
         >
           Open Download Popup
-        </Button>
+        </Button> */}
 
-        <DownloadPopup
+        {/* <DownloadPopup
           isOpen={downloadPopupIsOpen}
           onClose={() => {
             setDownloadPopupIsOpen(false);
@@ -118,7 +118,7 @@ function App() {
             thumbnail: "",
             description: "Description",
           }}
-        />
+        /> */}
 
         {/* <div>{appDataDirPath}</div> */}
         {/* <div>{file}</div> */}
