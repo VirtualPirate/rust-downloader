@@ -10,7 +10,7 @@ use std::path::PathBuf;
 use binaries::convert_mp4_to_mp3;
 use tauri::Manager;
 
-use commands::{download_ffmpeg, download_ytdlp, ffmpeg_exists, ytdlp_exists};
+use commands::{download_ffmpeg, download_ytdlp, ffmpeg_exists, get_ytdlp_filename, ytdlp_exists};
 use parsers::fetch_youtube_video;
 
 #[tauri::command]
@@ -65,6 +65,7 @@ pub fn run() {
             download_ffmpeg,
             download_ytdlp,
             fetch_youtube_video,
+            get_ytdlp_filename,
         ])
         .run(context)
         .expect("error while running tauri application");

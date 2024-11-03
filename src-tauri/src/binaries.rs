@@ -8,6 +8,18 @@ use std::{
 };
 use youtube_dl::{download_yt_dlp, downloader::YoutubeDlFetcher};
 
+#[cfg(target_os = "macos")]
+pub const YTDLP_FILENAME: &str = "yt-dlp_macos";
+
+#[cfg(all(target_os = "linux", target_arch = "aarch64"))]
+pub const YTDLP_FILENAME: &str = "yt-dlp_linux_aarch64";
+
+#[cfg(all(target_os = "linux", not(target_arch = "aarch64")))]
+pub const YTDLP_FILENAME: &str = "yt-dlp_linux";
+
+#[cfg(target_os = "windows")]
+pub const YTDLP_FILENAME: &str = "yt-dlp.exe";
+
 pub fn ffmpeg_exists(path: &PathBuf) -> bool {
     match check_latest_version() {
         Ok(version) => {
@@ -32,11 +44,7 @@ pub async fn ytdlp_exists(path: &PathBuf) -> bool {
         Ok(release) => release,
         Err(_) => return false,
     };
-    let path = if cfg!(target_os = "windows") {
-        path.join("yt-dlp.exe")
-    } else {
-        path.join("yt-dlp")
-    };
+    let path = path.join(YTDLP_FILENAME);
     match std::process::Command::new(&path).arg("--version").output() {
         Ok(output) => {
             let version = String::from_utf8_lossy(&output.stdout).trim().to_string();

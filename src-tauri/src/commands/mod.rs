@@ -1,6 +1,6 @@
 use youtube_dl::download_yt_dlp;
 
-use crate::binaries;
+use crate::binaries::{self, YTDLP_FILENAME};
 use std::path::PathBuf;
 
 #[tauri::command]
@@ -39,4 +39,9 @@ pub async fn download_ytdlp(path: String) -> bool {
     let success = download_yt_dlp(&path).await.is_ok();
     println!("[success] download_ytdlp");
     success
+}
+
+#[tauri::command]
+pub async fn get_ytdlp_filename() -> String {
+    YTDLP_FILENAME.to_string()
 }
